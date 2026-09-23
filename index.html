@@ -211,8 +211,10 @@ const CONFIG = {
   passwordHash:"fafab85997bb2fe5b91dba93f734fa9457b037ec3b307b5b6faffa5fb3c40934",
   pinsFile:"sifrepo-pins.txt",
   cacheKey:"sifrepo-repos-v3",
-  pinKey:"sifrepo-pins-v3",
-  themeKey:"sifrepo-theme-v1"
+  pinKey:"sifrepo-pins-v4",
+  themeKey:"sifrepo-theme-v1",
+  pagesCacheKey:"sifrepo-pages-v1",
+  autoPinMarker:"[SifRepo]"
 };
 
 let repos=[];
@@ -248,10 +250,23 @@ function savePins(){
   localStorage.setItem(CONFIG.pinKey,JSON.stringify(pins));
   $("#pinCount").textContent=pins.length;
 }
+function hasAutoPinMarker(repo){
+  return typeof repo.description==="string" &&
+    repo.description.toLowerCase().includes(CONFIG.autoPinMarker.toLowerCase());
+}
+
 function cleanPins(){
   const valid=new Set(repos.map(r=>r.key));
-  const next=pins.filter(k=>valid.has(k));
-  if(next.length!==pins.length){pins=next;savePins()}
+  const autoPinned=repos.filter(hasAutoPinMarker).map(r=>r.key);
+
+  // Description marker is authoritative for automatic pins:
+  // add marked repos and remove automatic pins when the marker disappears.
+  const next=[...new Set([...pins.filter(k=>valid.has(k)),...autoPinned])];
+
+  if(next.join("\n")!==pins.join("\n")){
+    pins=next;
+    savePins();
+  }
 }
 
 async function sha256(text){
@@ -279,26 +294,72 @@ function populateLanguages(){
     langs.map(x=>`<option value="${escapeHTML(x)}">${escapeHTML(x)}</option>`).join("");
 }
 
-function pagesCandidate(repo){
-  // homepage is the most reliable public signal exposed in the repository list.
-  if(repo.homepage && /^https?:\/\//i.test(repo.homepage)) return repo.homepage;
+function pagesFallback(repo){
+  // Only use the conventional URL when it is the special user/org site.
   if(repo.name.toLowerCase()===`${repo.owner.toLowerCase()}.github.io`)
-    return `https://${repo.owner}.github.io/`;
+    return `https://${repo.owner.toLowerCase()}.github.io/`;
+  // A repository homepage is explicitly supplied by the owner and is a
+  // useful fallback, but it is not assumed to be a GitHub Pages URL.
+  if(repo.homepage && /^https?:\/\//i.test(repo.homepage)) return repo.homepage;
   return "";
 }
 
-async function fetchPages(repo){
-  // GitHub Pages API is checked only once per repository per page load.
-  // If unavailable/404, homepage remains the fallback.
+function readPagesCache(){
+  try{return JSON.parse(localStorage.getItem(CONFIG.pagesCacheKey)||"{}")}catch{return {}}
+}
+function savePagesCache(cache){
+  localStorage.setItem(CONFIG.pagesCacheKey,JSON.stringify(cache));
+}
+
+async function getPagesUrl(repo){
+  const cache=readPagesCache();
+  const cached=cache[repo.key];
+  const maxAge=6*60*60*1000;
+  if(cached && Date.now()-cached.time<maxAge) return cached.url||"";
+
   try{
-    const res=await fetch(`https://api.github.com/repos/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}/pages`,
-      {headers:{"Accept":"application/vnd.github+json"}});
+    const res=await fetch(
+      `https://api.github.com/repos/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}/pages`,
+      {
+        method:"GET",
+        headers:{
+          "Accept":"application/vnd.github+json",
+          "X-GitHub-Api-Version":"2026-03-10"
+        }
+      }
+    );
+
     if(res.ok){
       const data=await res.json();
-      return data.html_url||data.url||pagesCandidate(repo);
+      const url=data.html_url||"";
+      cache[repo.key]={time:Date.now(),url,status:data.status||"unknown"};
+      savePagesCache(cache);
+      return url;
     }
-  }catch{}
-  return pagesCandidate(repo);
+
+    // 404 means this repository does not currently expose a Pages site.
+    // Do not fall back to a guessed /repo URL because that creates broken links.
+    cache[repo.key]={time:Date.now(),url:"",status:"none"};
+    savePagesCache(cache);
+    return "";
+  }catch{
+    // Keep a short-lived negative result if the API is temporarily unavailable.
+    cache[repo.key]={time:Date.now(),url:"",status:"error"};
+    savePagesCache(cache);
+    return "";
+  }
+}
+
+async function enrichPages(list){
+  // Limit concurrency so a larger account does not burst the API.
+  const queue=[...list];
+  const workers=Array.from({length:5},async()=>{
+    while(queue.length){
+      const repo=queue.shift();
+      repo.pagesUrl=await getPagesUrl(repo);
+    }
+  });
+  await Promise.all(workers);
 }
 
 async function fetchProfile(profile){
@@ -317,7 +378,7 @@ async function fetchProfile(profile){
         owner:profile.owner,
         profileLabel:profile.label,
         key:`${profile.owner}/${r.name}`,
-        pagesUrl:pagesCandidate({...r,owner:profile.owner})
+        pagesUrl:""
       });
     }
     if(batch.length<100)break;
@@ -335,8 +396,9 @@ async function fetchRepos(){
 
 function card(repo,pinnedCard=false){
   const pinned=pins.includes(repo.key);
+  const autoPinned=hasAutoPinMarker(repo);
   const live=repo.pagesUrl?
-    `<a class="repo-link" href="${escapeHTML(repo.pagesUrl)}" target="_blank" rel="noopener">Live ↗</a>`:
+    `<a class="repo-link" href="${escapeHTML(repo.pagesUrl)}" target="_blank" rel="noopener">Pages ↗</a>`:
     `<span class="repo-link" style="opacity:.45">No Pages</span>`;
 
   return `<article class="card ${pinnedCard?"draggable-card":""}"
@@ -346,13 +408,14 @@ function card(repo,pinnedCard=false){
         <h3 class="repo-name">${escapeHTML(repo.name)}</h3>
         <div class="source">${escapeHTML(repo.profileLabel)} · @${escapeHTML(repo.owner)}</div>
       </div>
-      ${adminUnlocked?`<button class="pin ${pinned?"pinned":""}" data-pin="${escapeHTML(repo.key)}" title="${pinned?"Unpin":"Pin"}">${pinned?"★":"☆"}</button>`:""}
+      ${adminUnlocked?`<button class="pin ${pinned?"pinned":""}" data-pin="${escapeHTML(repo.key)}" title="${autoPinned?"Pinned by [SifRepo] description marker":(pinned?"Unpin":"Pin")}">${pinned?"★":"☆"}</button>`:""}
     </div>
     <p class="desc">${escapeHTML(repo.description||"No description provided.")}</p>
     <div class="meta">
       <span>${escapeHTML(repo.language||"No language")}</span>
       <span>★ ${repo.stargazers_count||0}</span>
       <span>${dateAgo(repo.updated_at)} ago</span>
+      ${autoPinned?`<span title="Automatically pinned by repository description">[SifRepo]</span>`:""}
     </div>
     <div class="actions">
       <a class="repo-link" href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener">GitHub ↗</a>
@@ -449,13 +512,14 @@ async function sync(){
   try{
     const fresh=await fetchRepos();
     repos=fresh;
+    await enrichPages(repos);
     localStorage.setItem(CONFIG.cacheKey,JSON.stringify({time:Date.now(),data:repos}));
     populateLanguages();cleanPins();render();
     $("#syncTime").textContent="just now";
   }catch(err){
     const cached=JSON.parse(localStorage.getItem(CONFIG.cacheKey)||"null");
     if(cached?.data){
-      repos=cached.data;populateLanguages();render();$("#syncTime").textContent="cached";
+      repos=cached.data;await enrichPages(repos);populateLanguages();cleanPins();render();$("#syncTime").textContent="cached";
       $("#resultCount").textContent="Using cached data";
     }else{
       repoGrid.innerHTML=`<div class="empty">Could not load GitHub repositories.<br><small>${escapeHTML(err.message)}</small></div>`;
