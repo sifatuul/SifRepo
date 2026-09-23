@@ -4,22 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>SifRepo — GitHub Repository Hub</title>
 <style>
 :root{
   --bg:#f7f7f8;--surface:#fff;--surface2:#f1f1f3;--text:#17181b;--muted:#70747d;
-  --line:#e4e5e8;--accent:#111214;--shadow:0 8px 30px rgba(0,0,0,.06);
+  --line:#e4e5e8;--accent:#111214;--accent-soft:#f0f1f3;--shadow:0 8px 30px rgba(0,0,0,.06);
   --radius:16px;
 }
 [data-theme="dark"]{
   --bg:#0b0c0f;--surface:#111318;--surface2:#181a20;--text:#f5f6f7;--muted:#9297a2;
-  --line:#292c34;--accent:#fff;--shadow:0 10px 35px rgba(0,0,0,.22);
+  --line:#292c34;--accent:#fff;--accent-soft:#20232a;--shadow:0 10px 35px rgba(0,0,0,.22);
 }
+[data-theme="red"]{--accent:#c62828;--accent-soft:#fdecec}
+[data-theme="blue"]{--accent:#2563eb;--accent-soft:#eaf1ff}
+[data-theme="purple"]{--accent:#7c3aed;--accent-soft:#f0eaff}
+[data-theme="pink"]{--accent:#db2777;--accent-soft:#fdeaf4}
+[data-theme="orange"]{--accent:#ea580c;--accent-soft:#fff0e8}
+[data-theme="green"]{--accent:#16834b;--accent-soft:#e8f7ef}
+[data-theme="bw"]{--accent:#111214;--accent-soft:#eeeeef}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   margin:0;background:var(--bg);color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:"Montserrat",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;
 }
 button,input,select{font:inherit}
@@ -40,14 +50,14 @@ a{text-decoration:none}
 .icon-btn:hover,.profile-link:hover{color:var(--text);border-color:#b9bcc2}
 .hero{max-width:780px;padding-bottom:54px}
 .kicker{font-size:12px;color:var(--muted);margin-bottom:12px}
-h1{font-size:clamp(48px,8vw,88px);line-height:.9;letter-spacing:-.075em;margin:0;font-weight:780}
+h1{font-size:clamp(58px,9.6vw,112px);line-height:.88;letter-spacing:-.085em;margin:0;font-weight:800}
 .hero p{max-width:680px;color:var(--muted);font-size:16px;line-height:1.65;margin:22px 0 0}
 .profile-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
 .tab{
   border:1px solid var(--line);background:transparent;color:var(--muted);
   border-radius:999px;padding:7px 11px;font-size:12px;cursor:pointer
 }
-.tab.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.tab.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
 .stat{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 10px}
 .stat b{color:var(--text);font-weight:650}
@@ -79,7 +89,7 @@ h1{font-size:clamp(48px,8vw,88px);line-height:.9;letter-spacing:-.075em;margin:0
   color:var(--muted);cursor:pointer;flex:none
 }
 .pin:hover{color:var(--text)}
-.pin.pinned{background:var(--text);color:var(--bg);border-color:var(--text)}
+.pin.pinned{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .desc{font-size:12px;line-height:1.55;color:var(--muted);margin:12px 0;flex:1}
 .meta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
 .meta span{font-size:10px;color:var(--muted);padding:4px 6px;border:1px solid var(--line);border-radius:999px}
@@ -94,6 +104,35 @@ h1{font-size:clamp(48px,8vw,88px);line-height:.9;letter-spacing:-.075em;margin:0
 @keyframes shimmer{to{background-position:-200% 0}}
 .footer{text-align:center;color:var(--muted);font-size:11px;margin-top:45px}
 .footer a{color:var(--text)}
+
+.quick-panel{
+  position:absolute;right:max(16px,calc((100vw - 1080px)/2));top:67px;z-index:15;
+  width:280px;padding:15px;background:var(--surface);border:1px solid var(--line);
+  border-radius:15px;box-shadow:0 18px 55px rgba(0,0,0,.14)
+}
+.quick-panel[hidden]{display:none}
+.quick-title{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:10px}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.theme-dot{
+  display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;
+  color:var(--muted);padding:7px;border-radius:9px;cursor:pointer;font-size:10px
+}
+.theme-dot:hover,.theme-dot.active{border-color:var(--accent);color:var(--text)}
+.theme-dot i{width:12px;height:12px;border-radius:50%;display:block;border:1px solid var(--line)}
+.theme-dot[data-theme-choice="light"] i{background:#fff}
+.theme-dot[data-theme-choice="dark"] i{background:#111}
+.theme-dot[data-theme-choice="red"] i{background:#c62828}
+.theme-dot[data-theme-choice="blue"] i{background:#2563eb}
+.theme-dot[data-theme-choice="purple"] i{background:#7c3aed}
+.theme-dot[data-theme-choice="pink"] i{background:#db2777}
+.theme-dot[data-theme-choice="orange"] i{background:#ea580c}
+.theme-dot[data-theme-choice="green"] i{background:#16834b}
+.theme-dot[data-theme-choice="bw"] i{background:linear-gradient(90deg,#111 50%,#fff 50%)}
+.scale-title{display:flex;justify-content:space-between;margin-top:16px}
+.scale-range{width:100%;accent-color:var(--accent)}
+.scale-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:3px}
+.icon-btn{min-width:36px}
+
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.48);display:grid;place-items:center;padding:18px;z-index:20}
 .modal[hidden]{display:none}
 .modal-box{width:min(500px,100%);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:0 25px 80px rgba(0,0,0,.25)}
@@ -116,16 +155,36 @@ h1{font-size:clamp(48px,8vw,88px);line-height:.9;letter-spacing:-.075em;margin:0
 <header class="top">
   <div class="brand">SifRepo</div>
   <div class="top-actions">
-    <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">☾</button>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">☾</button>
+    <button class="icon-btn" id="themeMenuBtn" type="button" aria-label="Choose theme">◐</button>
+    <button class="icon-btn" id="scaleBtn" type="button" aria-label="Adjust page scale">A↕</button>
     <button class="icon-btn" id="adminBtn" type="button">Admin</button>
-    <a class="profile-link" href="https://github.com/sifatuul" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="profile-link" href="https://github.com/sifatuul" target="_blank" rel="noopener"><span aria-hidden="true">◉</span> GitHub</a>
   </div>
 </header>
+
+<div class="quick-panel" id="quickPanel" hidden>
+  <div class="quick-title">Appearance</div>
+  <div class="theme-grid">
+    <button class="theme-dot" data-theme-choice="light" title="Light"><i></i><span>Light</span></button>
+    <button class="theme-dot" data-theme-choice="dark" title="Dark"><i></i><span>Dark</span></button>
+    <button class="theme-dot" data-theme-choice="red" title="Red"><i></i><span>Red</span></button>
+    <button class="theme-dot" data-theme-choice="blue" title="Blue"><i></i><span>Blue</span></button>
+    <button class="theme-dot" data-theme-choice="purple" title="Purple"><i></i><span>Purple</span></button>
+    <button class="theme-dot" data-theme-choice="pink" title="Pink"><i></i><span>Pink</span></button>
+    <button class="theme-dot" data-theme-choice="orange" title="Orange"><i></i><span>Orange</span></button>
+    <button class="theme-dot" data-theme-choice="green" title="Green"><i></i><span>Green</span></button>
+    <button class="theme-dot" data-theme-choice="bw" title="Black & white"><i></i><span>B&W</span></button>
+  </div>
+  <div class="quick-title scale-title">Scale <b id="scaleValue">100%</b></div>
+  <input id="scaleRange" class="scale-range" type="range" min="85" max="125" step="5" value="100">
+  <div class="scale-labels"><span>85%</span><span>125%</span></div>
+</div>
 
 <main>
 <section class="hero">
   <div class="kicker">GitHub repository hub</div>
-  <h1>repositories.</h1>
+  <h1>Sifats<br>repositories.</h1>
   <p>Public projects from my personal and education GitHub profiles, kept automatically in sync with GitHub.</p>
   <div class="profile-tabs" id="profileTabs"></div>
   <div class="stats">
@@ -311,52 +370,37 @@ function savePagesCache(cache){
   localStorage.setItem(CONFIG.pagesCacheKey,JSON.stringify(cache));
 }
 
-async function getPagesUrl(repo){
-  const cache=readPagesCache();
-  const cached=cache[repo.key];
-  const maxAge=6*60*60*1000;
-  if(cached && Date.now()-cached.time<maxAge) return cached.url||"";
-
-  try{
-    const res=await fetch(
-      `https://api.github.com/repos/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}/pages`,
-      {
-        method:"GET",
-        headers:{
-          "Accept":"application/vnd.github+json",
-          "X-GitHub-Api-Version":"2026-03-10"
-        }
-      }
-    );
-
-    if(res.ok){
-      const data=await res.json();
-      const url=data.html_url||"";
-      cache[repo.key]={time:Date.now(),url,status:data.status||"unknown"};
-      savePagesCache(cache);
-      return url;
-    }
-
-    // 404 means this repository does not currently expose a Pages site.
-    // Do not fall back to a guessed /repo URL because that creates broken links.
-    cache[repo.key]={time:Date.now(),url:"",status:"none"};
-    savePagesCache(cache);
-    return "";
-  }catch{
-    // Keep a short-lived negative result if the API is temporarily unavailable.
-    cache[repo.key]={time:Date.now(),url:"",status:"error"};
-    savePagesCache(cache);
-    return "";
+function getPagesUrl(repo){
+  // GitHub Pages project sites normally live at owner.github.io/repository.
+  // Prefer an explicit GitHub Pages/homepage URL when the repository exposes one.
+  if(repo.homepage && /^https?:\/\//i.test(repo.homepage)){
+    const h=repo.homepage.trim();
+    if(h.includes("github.io")) return h.replace(/\/$/,"")+"/";
   }
+  if(repo.name.toLowerCase()===`${repo.owner.toLowerCase()}.github.io`)
+    return `https://${repo.owner.toLowerCase()}.github.io/`;
+  return `https://${repo.owner.toLowerCase()}.github.io/${encodeURIComponent(repo.name)}/`;
 }
 
 async function enrichPages(list){
-  // Limit concurrency so a larger account does not burst the API.
+  // Always show a Pages button. We use the conventional GitHub Pages URL by
+  // default, while replacing it with GitHub's verified html_url when available.
+  list.forEach(repo=>{repo.pagesUrl=getPagesUrl(repo)});
+
   const queue=[...list];
   const workers=Array.from({length:5},async()=>{
     while(queue.length){
       const repo=queue.shift();
-      repo.pagesUrl=await getPagesUrl(repo);
+      try{
+        const res=await fetch(
+          `https://api.github.com/repos/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}/pages`,
+          {headers:{"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}}
+        );
+        if(res.ok){
+          const data=await res.json();
+          if(data.html_url) repo.pagesUrl=data.html_url;
+        }
+      }catch{}
     }
   });
   await Promise.all(workers);
@@ -398,7 +442,7 @@ function card(repo,pinnedCard=false){
   const pinned=pins.includes(repo.key);
   const autoPinned=hasAutoPinMarker(repo);
   const live=repo.pagesUrl?
-    `<a class="repo-link" href="${escapeHTML(repo.pagesUrl)}" target="_blank" rel="noopener">Pages ↗</a>`:
+    `<a class="repo-link" href="${escapeHTML(repo.pagesUrl)}" target="_blank" rel="noopener"><span aria-hidden="true">◈</span> Pages</a>`:
     `<span class="repo-link" style="opacity:.45">No Pages</span>`;
 
   return `<article class="card ${pinnedCard?"draggable-card":""}"
@@ -418,7 +462,7 @@ function card(repo,pinnedCard=false){
       ${autoPinned?`<span title="Automatically pinned by repository description">[SifRepo]</span>`:""}
     </div>
     <div class="actions">
-      <a class="repo-link" href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="repo-link" href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener"><span aria-hidden="true">◉</span> GitHub</a>
       ${live}
     </div>
   </article>`;
@@ -531,17 +575,46 @@ async function sync(){
 function applyTheme(theme){
   document.documentElement.dataset.theme=theme;
   localStorage.setItem(CONFIG.themeKey,theme);
-  $("#themeBtn").textContent=theme==="dark"?"☀":"☾";
+  $("#themeBtn").textContent=(theme==="dark")?"☀":"☾";
+  document.querySelectorAll("[data-theme-choice]").forEach(b=>b.classList.toggle("active",b.dataset.themeChoice===theme));
 }
 const savedTheme=localStorage.getItem(CONFIG.themeKey);
 applyTheme(savedTheme||"light");
+
+function applyScale(value){
+  document.documentElement.style.setProperty("--ui-scale", value/100);
+  // Scale the whole app without changing viewport geometry.
+  document.body.style.zoom=(value/100);
+  $("#scaleValue").textContent=value+"%";
+  localStorage.setItem("sifrepo-scale",value);
+}
+applyScale(Number(localStorage.getItem("sifrepo-scale")||100));
 
 loadLocalPins();profileTabs();
 $("#search").addEventListener("input",render);
 $("#language").addEventListener("change",render);
 $("#sort").addEventListener("change",render);
 $("#refresh").addEventListener("click",sync);
-$("#themeBtn").addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
+
+$("#themeBtn").addEventListener("click",()=>{
+  applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+});
+$("#themeMenuBtn").addEventListener("click",()=>{
+  const panel=$("#quickPanel");panel.hidden=!panel.hidden;
+});
+$("#scaleBtn").addEventListener("click",()=>{
+  const panel=$("#quickPanel");panel.hidden=!panel.hidden;$("#scaleRange").focus();
+});
+document.querySelectorAll("[data-theme-choice]").forEach(btn=>{
+  btn.addEventListener("click",()=>applyTheme(btn.dataset.themeChoice));
+});
+$("#scaleRange").addEventListener("input",e=>applyScale(Number(e.target.value)));
+document.addEventListener("click",e=>{
+  const panel=$("#quickPanel");
+  if(panel.hidden)return;
+  if(!panel.contains(e.target)&&!e.target.closest("#themeMenuBtn")&&!e.target.closest("#scaleBtn")) panel.hidden=true;
+});
+
 
 $("#profileTabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-profile]");if(!b)return;
