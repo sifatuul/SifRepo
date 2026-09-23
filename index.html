@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b0d12" />
+  <title>SifRepo — Sifatul's GitHub</title>
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --bg-soft: #10131a;
+      --card: rgba(20, 24, 33, .82);
+      --card-hover: rgba(26, 31, 42, .96);
+      --text: #f4f7fb;
+      --muted: #9da7b5;
+      --line: rgba(255,255,255,.09);
+      --accent: #8ab4ff;
+      --accent-2: #b9a7ff;
+      --danger: #ff7e8b;
+      --success: #75d39c;
+      --shadow: 0 20px 60px rgba(0,0,0,.28);
+      --radius: 22px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(138,180,255,.12), transparent 30%),
+        radial-gradient(circle at 100% 10%, rgba(185,167,255,.10), transparent 28%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      padding: 26px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 42px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      font-size: 1.15rem;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: linear-gradient(145deg, rgba(138,180,255,.22), rgba(185,167,255,.09));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .profile-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-btn:hover { background: rgba(255,255,255,.07); transform: translateY(-1px); }
+
+    .hero {
+      padding: 14px 0 34px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      margin-bottom: 13px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.7rem, 8vw, 5.7rem);
+      line-height: .94;
+      letter-spacing: -.07em;
+      max-width: 800px;
+    }
+
+    .hero-copy {
+      max-width: 670px;
+      color: var(--muted);
+      line-height: 1.72;
+      font-size: 1.04rem;
+      margin: 20px 0 0;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .stat {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.025);
+      font-size: .84rem;
+    }
+    .stat b { color: var(--text); }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 170px 170px auto;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0 18px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap span {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.035);
+      color: var(--text);
+      padding: 12px 13px;
+      border-radius: 13px;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    .input-wrap input { padding-left: 38px; }
+    input:focus, select:focus { border-color: rgba(138,180,255,.55); box-shadow: 0 0 0 4px rgba(138,180,255,.08); }
+
+    .action {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(138,180,255,.13), rgba(185,167,255,.08));
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 13px;
+      cursor: pointer;
+      transition: .2s ease;
+      font-weight: 700;
+    }
+    .action:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.17); }
+    .action.secondary { background: rgba(255,255,255,.035); font-weight: 600; }
+
+    .section {
+      margin-top: 38px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 15px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -.02em;
+    }
+
+    .section-note {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    .repo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .repo-card {
+      position: relative;
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius);
+      padding: 19px;
+      min-height: 215px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      animation: in .35s ease both;
+    }
+
+    .repo-card:hover {
+      transform: translateY(-3px);
+      background: var(--card-hover);
+      border-color: rgba(255,255,255,.13);
+    }
+
+    .repo-card.dragging { opacity: .45; transform: scale(.985); }
+    .repo-card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(138,180,255,.08); }
+
+    @keyframes in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .repo-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .repo-name {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.25;
+      letter-spacing: -.02em;
+      word-break: break-word;
+    }
+
+    .repo-status {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 5px 8px;
+      font-size: .7rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+      background: rgba(255,255,255,.025);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .dot.off { background: var(--muted); }
+
+    .repo-desc {
+      color: var(--muted);
+      margin: 12px 0 15px;
+      line-height: 1.55;
+      font-size: .91rem;
+      flex: 1;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 15px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: .72rem;
+      color: var(--muted);
+      background: rgba(255,255,255,.02);
+    }
+
+    .repo-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .repo-btn {
+      padding: 9px 10px;
+      border-radius: 11px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.035);
+      color: var(--text);
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+    .repo-btn:hover { background: rgba(255,255,255,.075); }
+    .repo-btn.live { background: rgba(117,211,156,.07); border-color: rgba(117,211,156,.2); }
+    .repo-btn.disabled { opacity: .4; pointer-events: none; }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 38px 18px;
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255,255,255,.02);
+      grid-column: 1/-1;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .pin-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.035);
+      color: var(--muted);
+      width: 31px;
+      height: 31px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      transition: .18s ease;
+    }
+    .pin-btn:hover { color: var(--text); background: rgba(255,255,255,.08); }
+    .pin-btn.pinned { color: var(--text); background: rgba(138,180,255,.13); border-color: rgba(138,180,255,.25); }
+
+    .profile-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      color: var(--muted);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:5px 8px;
+      font-size:.7rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,.58);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal[hidden] { display: none; }
+
+    .modal-card {
+      width: min(100%, 520px);
+      border: 1px solid var(--line);
+      border-radius: 23px;
+      background: #11151d;
+      box-shadow: 0 30px 100px rgba(0,0,0,.45);
+      padding: 22px;
+    }
+
+    .modal-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:15px;
+      margin-bottom:10px;
+    }
+
+    .modal-head h3 { margin:0; font-size:1.2rem; letter-spacing:-.03em; }
+    .close-btn {
+      width:34px;height:34px;border:1px solid var(--line);border-radius:10px;
+      color:var(--muted);background:rgba(255,255,255,.03);cursor:pointer;font-size:1.3rem;
+    }
+
+    .admin-label { display:block; margin:20px 0 7px; font-size:.78rem; color:var(--muted); }
+    .admin-row { display:grid; grid-template-columns:1fr auto; gap:8px; }
+    .admin-panel { margin-top:18px; padding-top:18px; border-top:1px solid var(--line); }
+    .admin-tools { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size:.78em;
+      padding:2px 5px;
+      border-radius:5px;
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+    }
+
+    .profile-strip {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .profile-pill {
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.025);
+      color:var(--muted);
+      padding:7px 10px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:.76rem;
+    }
+    .profile-pill.active { color:var(--text); border-color:rgba(138,180,255,.32); background:rgba(138,180,255,.1); }
+
+    .footer {
+      margin-top: 44px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .78rem;
+    }
+
+    .footer a { color: var(--text); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(16,19,26,.95);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 13px;
+      padding: 11px 14px;
+      font-size: .82rem;
+      box-shadow: var(--shadow);
+      transition: .24s ease;
+      z-index: 50;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .skeleton {
+      min-height: 215px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(255,255,255,.025), rgba(255,255,255,.07), rgba(255,255,255,.025));
+      background-size: 200% 100%;
+      animation: shimmer 1.35s infinite;
+    }
+
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    @media (max-width: 960px) {
+      .repo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(calc(100% - 22px), var(--max)); }
+      .topbar { margin-bottom: 30px; }
+      .hero { padding-top: 4px; }
+      .toolbar { grid-template-columns: 1fr; }
+      .repo-grid { grid-template-columns: 1fr; }
+      .repo-card { min-height: 190px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SR</div>
+        <span>SifRepo</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="profile-btn" id="adminBtn" type="button">Admin</button>
+        <a class="profile-btn" href="https://github.com/sifatuul" target="_blank" rel="noopener noreferrer">
+          GitHub ↗
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">GitHub repository hub</div>
+        <h1>Sifatul's<br />repositories.</h1>
+        <p class="hero-copy">
+          A live, lightweight index of my public GitHub work — with frequently used projects kept up front.
+          Repository information is loaded directly from GitHub.
+        </p>
+        <div class="profile-strip" id="profileStrip"></div>
+        <div class="stats">
+          <span class="stat">Public repos <b id="repoCount">—</b></span>
+          <span class="stat">Essential <b id="essentialCount">0</b></span>
+          <span class="stat">Last sync <b id="lastSync">—</b></span>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">Browse</h2>
+          <span class="section-note" id="resultNote">Loading repositories…</span>
+        </div>
+
+        <div class="toolbar">
+          <div class="input-wrap">
+            <span>⌕</span>
+            <input id="search" type="search" placeholder="Search repositories…" autocomplete="off" />
+          </div>
+          <select id="language">
+            <option value="all">All languages</option>
+          </select>
+          <select id="sort">
+            <option value="updated">Recently updated</option>
+            <option value="stars">Most starred</option>
+            <option value="name">Name A–Z</option>
+            <option value="created">Recently created</option>
+          </select>
+          <button class="action secondary" id="refresh">Refresh</button>
+        </div>
+      </section>
+
+      <section class="section" id="essentialSection" hidden>
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Essential</h2>
+            <div class="section-note">Drag cards to rearrange. Your order is saved on this browser.</div>
+          </div>
+        </div>
+        <div class="repo-grid" id="essentialGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">All repositories</h2>
+          <span class="section-note">Public repositories only</span>
+        </div>
+        <div class="repo-grid" id="repoGrid">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Built for <a href="https://github.com/sifatuul" target="_blank" rel="noopener noreferrer">@sifatuul</a>
+      · SifRepo
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CONFIG = {
+      profiles: [
+        { username: "sifatuul", label: "Personal", profile: "https://github.com/sifatuul" },
+        { username: "BUETian", label: "Education", profile: "https://github.com/BUETian" }
+      ],
+      adminPassword: "64556455",
+      pinsFile: "sifrepo-pins.txt",
+      cacheKey: "sifrepo-cache-v2",
+      cacheTTL: 5 * 60 * 1000
+    };
+
+    let repos = [];
+    let essentialOrder = JSON.parse(localStorage.getItem(CONFIG.essentialKey) || "[]");
+    let draggedName = null;
+    let selectedProfile = "all";
+
+    const $ = (selector) => document.querySelector(selector);
+    const repoGrid = $("#repoGrid");
+    const essentialGrid = $("#essentialGrid");
+    const essentialSection = $("#essentialSection");
+
+    function escapeHtml(value = "") {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return "—";
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" }).format(date);
+    }
+
+    function relativeDate(dateString) {
+      const d = new Date(dateString);
+      const sec = Math.max(1, Math.floor((Date.now() - d.getTime()) / 1000));
+      if (sec < 60) return "just now";
+      if (sec < 3600) return Math.floor(sec / 60) + "m ago";
+      if (sec < 86400) return Math.floor(sec / 3600) + "h ago";
+      if (sec < 2592000) return Math.floor(sec / 86400) + "d ago";
+      if (sec < 31536000) return Math.floor(sec / 2592000) + "mo ago";
+      return Math.floor(sec / 31536000) + "y ago";
+    }
+
+    function getPagesUrl(repo) {
+      // GitHub's Pages settings are not exposed by the public unauthenticated
+      // repo list endpoint. For common project Pages layouts, infer the URL.
+      // A repo named username.github.io uses the root GitHub Pages URL.
+      if (repo.name.toLowerCase() === `${CONFIG.username.toLowerCase()}.github.io`) {
+        return `https://${CONFIG.username}.github.io/`;
+      }
+      return `https://${CONFIG.username}.github.io/${encodeURIComponent(repo.name)}/`;
+    }
+
+    async function pagesExists(url) {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 5500);
+        const response = await fetch(url, {
+          method: "HEAD",
+          mode: "no-cors",
+          redirect: "follow",
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        // no-cors returns opaque responses. A completed fetch is still useful
+        // as a best-effort signal, but we do not assume availability from status.
+        return !!response;
+      } catch {
+        return false;
+      }
+    }
+
+    async function enrichPages(reposToCheck) {
+      // Best effort only. GitHub Pages is linked using the standard Pages URL;
+      // the button will be present only for repos whose Pages URL responds.
+      const checks = reposToCheck.slice(0, 30).map(async (repo) => {
+        const url = getPagesUrl(repo);
+        repo.pagesUrl = url;
+        repo.pagesAvailable = await pagesExists(url);
+      });
+      await Promise.all(checks);
+    }
+
+    function essentialRepos() {
+      const byKey = new Map(repos.map(r => [r.key, r]));
+      const ordered = essentialOrder.map(key => byKey.get(key)).filter(Boolean);
+
+      const validKeys = new Set(repos.map(r => r.key));
+      essentialOrder = essentialOrder.filter(key => validKeys.has(key));
+      persistPinsToLocal();
+
+      return ordered;
+    }
+
+    function persistPinsToLocal() {
+      localStorage.setItem(CONFIG.essentialKey, JSON.stringify(essentialOrder));
+      $("#essentialCount").textContent = essentialOrder.length;
+    }
+
+    function pinsText() {
+      return [
+        "# SifRepo pinned repositories",
+        "# One repository key per line: owner/repository",
+        ...essentialOrder
+      ].join("\\n") + "\\n";
+    }
+
+    function loadPinsFromText(text) {
+      const parsed = text.split(/\\r?\\n/)
+        .map(line => line.trim())
+        .filter(line => line && !line.startsWith("#"));
+      essentialOrder = [...new Set(parsed)];
+      persistPinsToLocal();
+      renderAll();
+      showToast(`${essentialOrder.length} pins loaded`);
+    }
+
+    async function importPinsFile(file) {
+      loadPinsFromText(await file.text());
+    }
+
+    function exportPinsFile() {
+      const blob = new Blob([pinsText()], {type: "text/plain;charset=utf-8"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = CONFIG.pinsFile;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    function pinRepo(key) {
+      if (!essentialOrder.includes(key)) {
+        essentialOrder.push(key);
+        persistPinsToLocal();
+        renderAll();
+        showToast("Repository pinned");
+      }
+    }
+
+    function unpinRepo(key) {
+      essentialOrder = essentialOrder.filter(k => k !== key);
+      persistPinsToLocal();
+      renderAll();
+      showToast("Repository unpinned");
+    }
+
+    function renderRepoCard(repo, options = {}) {
+      const essential = !!options.essential;
+      const language = repo.language || "No language";
+      const description = repo.description || "No description provided.";
+      const pagesLink = repo.pagesAvailable ? `
+        <a class="repo-btn live" href="${repo.pagesUrl}" target="_blank" rel="noopener noreferrer">Live Page ↗</a>
+      ` : `<span class="repo-btn disabled">No Live Page</span>`;
+
+      const pinned = essentialOrder.includes(repo.key);
+      const pinButton = `<button class="pin-btn ${pinned ? "pinned" : ""}" type="button" data-pin="${escapeHtml(repo.key)}" title="${pinned ? "Unpin" : "Pin"} repository">${pinned ? "★" : "☆"}</button>`;
+      const sourceLabel = repo.profileLabel || "GitHub";
+
+      return `
+        <article class="repo-card ${essential ? "draggable-essential" : ""}"
+          ${essential ? `draggable="true" data-name="${escapeHtml(repo.name)}"` : ""}>
+          <div class="repo-top">
+            <div style="min-width:0">
+              <h3 class="repo-name">${escapeHtml(repo.name)}</h3>
+              <div class="profile-badge">${escapeHtml(sourceLabel)}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px">
+              ${pinButton}
+              <span class="repo-status">
+              <span class="dot ${repo.archived ? "off" : ""}"></span>
+                ${repo.archived ? "Archived" : "Public"}
+              </span>
+            </div>
+          </div>
+
+          <p class="repo-desc">${escapeHtml(description)}</p>
+
+          <div class="chips">
+            <span class="chip">${escapeHtml(language)}</span>
+            <span class="chip">★ ${Number(repo.stargazers_count || 0)}</span>
+            <span class="chip">⑂ ${Number(repo.forks_count || 0)}</span>
+            <span class="chip" title="${escapeHtml(formatDate(repo.updated_at))}">${escapeHtml(relativeDate(repo.updated_at))}</span>
+          </div>
+
+          <div class="repo-actions">
+            <a class="repo-btn" href="${repo.html_url}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            ${pagesLink}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderAll() {
+      const q = $("#search").value.trim().toLowerCase();
+      const language = $("#language").value;
+      const sort = $("#sort").value;
+
+      let filtered = repos.filter(repo => {
+        const haystack = `${repo.name} ${repo.description || ""} ${repo.language || ""}`.toLowerCase();
+        const matchesSearch = !q || haystack.includes(q);
+        const matchesLanguage = language === "all" || (repo.language || "No language") === language;
+        const matchesProfile = selectedProfile === "all" || repo.profileOwner === selectedProfile;
+        return matchesSearch && matchesLanguage && matchesProfile;
+      });
+
+      filtered.sort((a, b) => {
+        if (sort === "name") return a.name.localeCompare(b.name);
+        if (sort === "stars") return (b.stargazers_count || 0) - (a.stargazers_count || 0);
+        if (sort === "created") return new Date(b.created_at) - new Date(a.created_at);
+        return new Date(b.updated_at) - new Date(a.updated_at);
+      });
+
+      if (!filtered.length) {
+        repoGrid.innerHTML = `<div class="empty">No repositories match your current filters.</div>`;
+      } else {
+        repoGrid.innerHTML = filtered.map(repo => renderRepoCard(repo)).join("");
+      }
+
+      renderEssential();
+      $("#resultNote").textContent = `${filtered.length} of ${repos.length} repositories`;
+    }
+
+    function renderEssential() {
+      const essential = essentialRepos();
+      $("#essentialCount").textContent = essential.length;
+
+      if (!essential.length) {
+        essentialSection.hidden = true;
+        return;
+      }
+
+      essentialSection.hidden = false;
+      essentialGrid.innerHTML = essential.map(repo => renderRepoCard(repo, { essential: true })).join("");
+      attachDragHandlers();
+    }
+
+    function saveEssential() {
+      localStorage.setItem(CONFIG.essentialKey, JSON.stringify(essentialOrder));
+      showToast("Essential order saved");
+      renderEssential();
+    }
+
+    function attachDragHandlers() {
+      essentialGrid.querySelectorAll(".draggable-essential").forEach(card => {
+        card.addEventListener("dragstart", () => {
+          draggedName = card.dataset.name;
+          card.classList.add("dragging");
+        });
+
+        card.addEventListener("dragend", () => {
+          draggedName = null;
+          card.classList.remove("dragging");
+          essentialGrid.querySelectorAll(".repo-card").forEach(c => c.classList.remove("drag-over"));
+        });
+
+        card.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          if (card.dataset.name !== draggedName) card.classList.add("drag-over");
+        });
+
+        card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+
+        card.addEventListener("drop", (event) => {
+          event.preventDefault();
+          const targetName = card.dataset.name;
+          card.classList.remove("drag-over");
+          if (!draggedName || draggedName === targetName) return;
+
+          const from = essentialOrder.indexOf(draggedName);
+          const to = essentialOrder.indexOf(targetName);
+          if (from === -1 || to === -1) return;
+
+          essentialOrder.splice(from, 1);
+          essentialOrder.splice(to, 0, draggedName);
+          saveEssential();
+        });
+      });
+    }
+
+    function renderProfileStrip() {
+      const strip = $("#profileStrip");
+      strip.innerHTML = `<button class="profile-pill active" data-profile="all">All profiles</button>` +
+        CONFIG.profiles.map(p => `<button class="profile-pill" data-profile="${escapeHtml(p.username)}">${escapeHtml(p.label)} · @${escapeHtml(p.username)}</button>`).join("");
+
+      strip.addEventListener("click", event => {
+        const btn = event.target.closest("[data-profile]");
+        if (!btn) return;
+        strip.querySelectorAll(".profile-pill").forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+        selectedProfile = btn.dataset.profile;
+        renderAll();
+      });
+    }
+
+    function populateLanguages() {
+      const languages = [...new Set(repos.map(r => r.language).filter(Boolean))].sort();
+      $("#language").innerHTML = `<option value="all">All languages</option>` +
+        languages.map(lang => `<option value="${escapeHtml(lang)}">${escapeHtml(lang)}</option>`).join("");
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    async function getUserRepos(username) {
+      const results = [];
+      let page = 1;
+
+      while (true) {
+        const url = `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&page=${page}&sort=updated`;
+        const response = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
+
+        if (!response.ok) {
+          throw new Error(`GitHub request failed for ${username} (${response.status})`);
+        }
+
+        const batch = await response.json();
+        if (!Array.isArray(batch) || batch.length === 0) break;
+
+        results.push(...batch.filter(r => !r.fork && !r.private).map(r => ({
+          ...r,
+          key: `${username}/${r.name}`,
+          profileLabel: CONFIG.profiles.find(p => p.username === username)?.label || username,
+          profileOwner: username
+        })));
+
+        if (batch.length < 100) break;
+        page++;
+      }
+
+      return results;
+    }
+
+    async function getReposFromGitHub() {
+      const profileResults = await Promise.all(CONFIG.profiles.map(p => getUserRepos(p.username)));
+      const merged = profileResults.flat();
+
+      // Deduplicate by owner/repo key in the unlikely event profiles overlap.
+      return [...new Map(merged.map(r => [r.key, r])).values()];
+    }
+
+    function useCache() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(CONFIG.cacheKey) || "null");
+        if (!cached || !Array.isArray(cached.data)) return false;
+        repos = cached.data;
+        populateLanguages();
+        renderAll();
+        $("#repoCount").textContent = repos.length;
+        $("#lastSync").textContent = "cached";
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    async function loadRepos({ force = false } = {}) {
+      const cachedRaw = localStorage.getItem(CONFIG.cacheKey);
+      const cached = cachedRaw ? JSON.parse(cachedRaw) : null;
+
+      if (!force && cached && Date.now() - cached.time < CONFIG.cacheTTL) {
+        useCache();
+        return;
+      }
+
+      $("#refresh").disabled = true;
+      $("#refresh").textContent = "Syncing…";
+
+      try {
+        const fresh = await getReposFromGitHub();
+        repos = fresh;
+
+        // Persist GitHub data only as a short-lived cache.
+        localStorage.setItem(CONFIG.cacheKey, JSON.stringify({
+          time: Date.now(),
+          data: repos
+        }));
+
+        populateLanguages();
+        $("#repoCount").textContent = repos.length;
+        $("#lastSync").textContent = "just now";
+        renderAll();
+
+        // Do a lightweight Pages check after the main UI is ready.
+        await enrichPages(repos);
+        renderAll();
+
+        showToast("Synced with GitHub");
+      } catch (error) {
+        if (!useCache()) {
+          repoGrid.innerHTML = `
+            <div class="empty">
+              Could not load repositories right now.<br>
+              <small>${escapeHtml(error.message)}</small>
+            </div>
+          `;
+          $("#resultNote").textContent = "Sync failed";
+        } else {
+          showToast("Using cached repository data");
+        }
+      } finally {
+        $("#refresh").disabled = false;
+        $("#refresh").textContent = "Refresh";
+      }
+    }
+
+    document.addEventListener("click", event => {
+      const pin = event.target.closest("[data-pin]");
+      if (pin) {
+        event.preventDefault();
+        event.stopPropagation();
+        const key = pin.dataset.pin;
+        if (essentialOrder.includes(key)) unpinRepo(key);
+        else pinRepo(key);
+        return;
+      }
+    });
+
+    $("#search").addEventListener("input", renderAll);
+    $("#language").addEventListener("change", renderAll);
+    $("#sort").addEventListener("change", renderAll);
+    $("#refresh").addEventListener("click", () => loadRepos({ force: true }));
+
+    const adminBtn = $("#adminBtn");
+    const adminModal = $("#adminModal");
+    const adminPanel = $("#adminPanel");
+
+    adminBtn.addEventListener("click", () => {
+      adminModal.hidden = false;
+      $("#adminPassword").focus();
+    });
+
+    $("#closeAdmin").addEventListener("click", () => {
+      adminModal.hidden = true;
+    });
+
+    adminModal.addEventListener("click", event => {
+      if (event.target === adminModal) adminModal.hidden = true;
+    });
+
+    $("#unlockAdmin").addEventListener("click", () => {
+      if ($("#adminPassword").value === CONFIG.adminPassword) {
+        adminPanel.hidden = false;
+        $("#managePins").hidden = false;
+        showToast("Admin access granted");
+      } else {
+        adminPanel.hidden = true;
+        $("#managePins").hidden = true;
+        showToast("Incorrect password");
+      }
+    });
+
+    $("#exportPins").addEventListener("click", exportPinsFile);
+    $("#importPins").addEventListener("click", () => $("#pinsFileInput").click());
+    $("#pinsFileInput").addEventListener("change", event => {
+      const file = event.target.files?.[0];
+      if (file) importPinsFile(file);
+      event.target.value = "";
+    });
+
+    $("#clearPins").addEventListener("click", () => {
+      if (confirm("Remove all pinned repositories from SifRepo?")) {
+        essentialOrder = [];
+        persistPinsToLocal();
+        renderAll();
+        showToast("Pins cleared");
+      }
+    });
+
+    $("#managePins").addEventListener("click", exportPinsFile);
+
+    renderProfileStrip();
+
+    // Sync on first load.
+    loadRepos();
+
+    // Periodic live update while the page remains open.
+    // Every 10 minutes, check GitHub for additions/removals/metadata changes.
+    setInterval(() => loadRepos({ force: true }), 10 * 60 * 1000);
+
+    // Refresh when returning to the tab after a while.
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) loadRepos({ force: true });
+    });
+  </script>
+</body>
+</html>
