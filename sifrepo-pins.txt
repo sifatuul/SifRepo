@@ -1,1 +1,5 @@
-
+# SifRepo pinned repositories
+# Add one repository per line in owner/repository format.
+# Example:
+# sifatuul/example
+# BUETian/example
